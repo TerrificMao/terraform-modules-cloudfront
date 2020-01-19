@@ -2,7 +2,18 @@
 provider "aws" {
   alias = "this"
 }
+
 # Variables
+variable project {
+  type = dex
+  description = "project"
+}
+
+variable env {
+  type = pre
+  description = "environment"
+}
+
 variable cfcalltag {
   type = string
   description = "cfcalltag"
@@ -54,8 +65,6 @@ resource "aws_cloudfront_distribution" "web-cloudfront" {
   }
   logging_config {
     include_cookies = false
-
-    #bucket = "${aws_s3_bucket.dispatcher_alblogs.bucket_domain_name}"
     bucket = "${var.cloudfront_log_buket_name}.s3.amazonaws.com"
     prefix = "webprod/cflogs/"
   }
@@ -79,15 +88,15 @@ resource "aws_cloudfront_distribution" "web-cloudfront" {
   origin {
     #domain_name = "${aws_lb.dispatcher_alb.dns_name}"
     #origin_id   = "ELB-${var.project}-${var.env}-dispatcher-alb"
-    domain_name = "${var.web_dispatcher_alb_dns_name}"
-    origin_id   = "ELB-${var.project}-${var.env}-dispatcher-alb"
+    domain_name  = "${var.web_dispatcher_alb_dns_name}"
+    origin_id    = "ELB-${var.project}-${var.env}-dispatcher-alb"
     custom_origin_config {
       http_port              = 80
       https_port             = 443
       origin_protocol_policy = "match-viewer"
       origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
 
-      #origin_ssl_protocols = "TLSv1"
+      #origin_ssl_protocols    = "TLSv1"
       origin_keepalive_timeout = 5
       origin_read_timeout      = 30
     }
